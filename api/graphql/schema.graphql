@@ -1,0 +1,149 @@
+type Playlist {
+    _id: ID!
+    title: String!
+    tracks: [Track]
+    user: User
+}
+
+type Track {
+    _id: ID!
+    title: String!
+    audioUrl: String!
+    author: String!
+    category: String!
+    description: String!
+    listensQuantity: Int!
+    likesQuantity: Int!
+    uploadedBy: String!
+    createdAt: String!
+    updatedAt: String!
+    usersWhoLiked: [ID!]!
+}
+
+type User {
+    _id: ID!
+    email: String!
+    password: String!
+    userName: String!
+    role: String!
+    playlists: [Playlist]
+}
+
+type Comment {
+    _id: ID!
+    title: String
+    content: String!
+    track: Track
+    user: User
+}
+
+type AuthData {
+    accessToken: String!
+    refreshToken: String!
+    credentials: Credentials!
+}
+
+type Credentials {
+    userId: String!
+    role: String!
+    userName: String
+}
+
+type Collections {
+    values: [String!]!
+}
+
+input TrackInputData {
+    title: String!
+    audioUrl: String!
+    author: String!
+    category: String!
+    description: String!
+    uploadedBy: ID!
+}
+
+input UserInputData {
+    email: String!
+    userName: String!
+    password: String
+    role: String
+}
+
+input CommentInputData {
+    content: String!
+    trackId: ID!
+    userName: String
+}
+
+type TrackData {
+    tracks: [Track!]!
+    total: Int!
+}
+
+input PlaylistInputData {
+    title: String!
+    userName: String!
+    tracks: String!
+}
+
+type UserData {
+    users: [User!]!
+    total: Int!
+}
+
+type PlaylistsData {
+    playlists: [Playlist!]!
+    total: Int!
+}
+
+type CommentsData {
+    comments: [Comment!]!
+    total: Int!
+}
+
+type RootQuery {
+    tracksData(limit: Int!, pageNumber: Int!): TrackData!
+    tracksDataChunk(limit: Int!, pageNumber: Int!, category: String!, userId: String, title: String): TrackData!
+    track(id: ID!): Track!
+    categories: [String]!
+    usersData(limit: Int!, pageNumber: Int!): UserData!
+    user(id: ID!): User!
+    commentsByTrack(trackId: ID!): [Comment]
+    commentsData(limit: Int!, pageNumber: Int!): CommentsData!
+    comment(id: ID!): Comment!
+    collections: Collections!
+    getCredentials: Credentials!
+    getPlaylistsByUser(userId: ID!): [Playlist!]!
+    playlist(id: ID!): Playlist!
+    playlistForForm(id: ID!): Playlist!
+    playlistsData(limit: Int!, pageNumber: Int!): PlaylistsData!
+}
+
+type RootMutation {
+    createUser(userInput: UserInputData!): User!
+    createTrack(trackInput: TrackInputData!): Track!
+    updateTrack(id: ID!, trackInput: TrackInputData!, oldUrl: String!): Track!
+    updateUser(id: ID!, userInput: UserInputData!): User!
+    deleteTrack(id: ID!): Track!
+    deleteUser(id: ID!): User!
+    addLike(id: ID!, userId: ID!): Int!
+    addListen(id: ID!): Track!
+    addComment(commentInput: CommentInputData!): Comment
+    addFullComment(userName: String!, trackTitle: String!, content: String!): Comment
+    updateComment(commentId: String!, userName: String!, trackTitle: String!, content: String!): Comment
+    deleteComment(id: ID!): Comment
+    login(email: String!, password: String!): AuthData!
+    logout(refreshToken: String!): String!
+    refresh(refreshToken: String!): AuthData!
+    createRawPlaylist(playlistName: String!, userId: ID!): Playlist
+    createPlaylist(playlistInput: PlaylistInputData!): Playlist
+    updatePlaylist(playlistId: ID!, playlistInput: PlaylistInputData!): Playlist
+    addTrackToPlaylists(playlistNames: [String!]!, trackId: ID!): Track
+    removeTrackFromPlaylist(playlistName: String!, trackId: ID!): Track
+    deletePlaylist(playlistId: ID!): Playlist
+}
+
+schema {
+    query: RootQuery
+    mutation: RootMutation
+}
