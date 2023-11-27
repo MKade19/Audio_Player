@@ -10,57 +10,40 @@ import PlaylistService from "../../../services/playlist.service";
 
 const PlaylistsPage = props => {
   const navigate = useNavigate();
-
-  const [state, setState] = useState({
-    playlists: [],
-    formModal: {
-      title: '',
-      show: false
-    },
-    formIsValid: false,
-    infoModal: {
-      title: '',
-      content: null,
-      show: false
-    },
+  
+  const [formModal, setFormModal] = useState({
+    title: '',
+    show: false
   });
-
-  useEffect(() => {
-    const controls = {...forms.signInForm};
-    setState({...state, controls: {...controls}});
-  }, []);
+  const [infoModal, setInfoModal] = useState({
+    title: '',
+    content: null,
+    show: false
+  });
+  const [formIsValid, setFormIsValid] = useState(false);
 
   useEffect(() => {
     if (props.playlistsError) {
-      setState({
-        ...state,
-        infoModal: {
-          title: 'Error ' + props.playlistsError.response.status,
-          content: props.playlistsError.response.data.errors[0].message,
-          show: true
-        }
+      setInfoModal({
+        title: 'Error ' + props.playlistsError.response.status,
+        content: props.playlistsError.response.data.errors[0].message,
+        show: true
       });
     }
   }, [props.playlistsError]);
 
   const addPlaylist = () => {
-    setState({
-      ...state,
-      formModal: {
-        title: 'Add playlist',
-        show: true
-      }
-    });
+    setFormModal({
+      title: 'Add playlist',
+      show: true
+    })
   };
 
   const closeFormModal = () => {
-    setState({
-      ...state,
-      formModal: {
-        title: '',
-        show: false
-      }
-    });
+    setFormModal({
+      title: '',
+      show: false
+    })
   }
 
   const submitHandler = async payload => {
@@ -72,13 +55,10 @@ const PlaylistsPage = props => {
   }
 
   const closeInfoModal = () => {
-    setState({
-      ...state,
-      infoModal: {
-        title: '',
-        content: null,
-        show: false
-      }
+    setInfoModal({
+      title: '',
+      content: null,
+      show: false
     });
   }
 
@@ -91,16 +71,13 @@ const PlaylistsPage = props => {
       </ListGroup.Item>
     });
 
-    setState({
-      ...state,
-      infoModal: {
-        title: 'Playlist tracks',
-        content: trackListInfo.length === 0 ? <h4>This playlist is empty!</h4> :
-          <ListGroup as="ol" className="text-capitalize" numbered>
-            {trackListInfo}
-          </ListGroup>,
-        show: true
-      }
+    setInfoModal({
+      title: 'Playlist tracks',
+      content: trackListInfo.length === 0 ? <h4>This playlist is empty!</h4> :
+        <ListGroup as="ol" className="text-capitalize" numbered>
+          {trackListInfo}
+        </ListGroup>,
+      show: true
     });
   }
 
@@ -148,7 +125,7 @@ const PlaylistsPage = props => {
   </div>
 
   const changeValidity = formIsValid => {
-    setState({...state, formIsValid: formIsValid})
+    setFormIsValid(formIsValid);
   }
 
   return (
@@ -162,18 +139,18 @@ const PlaylistsPage = props => {
       }
       {playlistControls}
       <FormModal
-        title={state.formModal.title}
+        title={formModal.title}
         controls={forms.addPlaylistForm}
-        showModal={state.formModal.show}
+        showModal={formModal.show}
         submitHandler={submitHandler}
         closeModal={closeFormModal}
-        formIsValid={state.formIsValid}
+        formIsValid={formIsValid}
         changeValidity={changeValidity}
       />
       <StandardModal
-        title={state.infoModal.title}
-        content={state.infoModal.content}
-        showModal={state.infoModal.show}
+        title={infoModal.title}
+        content={infoModal.content}
+        showModal={infoModal.show}
         closeModal={closeInfoModal}
       />
     </div>

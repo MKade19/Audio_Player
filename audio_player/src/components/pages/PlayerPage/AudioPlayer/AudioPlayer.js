@@ -12,29 +12,27 @@ import * as actions from "../../../../store/actions";
 const AudioPlayer = props => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [ state, setState ] = useState({
-    currentTrack: {},
-    errorModal: {
-      title: '',
-      content: '',
-      show: false,
-    },
-    isLiked: false,
-    playlistsModal: {
-      title: '',
-      show: false
-    },
-    listenedOffset: 0.0,
-    formIsValid: true,
-    hasListened: false
+  const [currentTrack, setCurrentTrack] = useState({});
+  const [errorModal, setErrorModal] = useState({
+    title: '',
+    content: '',
+    show: false,
   });
+  const [isLiked, setIsLiked] = useState(false);
+  const [playlistsModal, setPlaylistsModal] = useState({
+    title: '',
+    show: false,
+  });
+  const [listenedOffset, setListenedOffset] = useState(0.0);
+  const [formIsValid, setFormIsValid] = useState(true);
+  const [hasListened, setHasListened] = useState(false);
 
   const onLoadedAudio = event => {
-    setState({ ...state, listenedOffset: event.target.duration * 1000 / 5 });
+    setListenedOffset(event.target.duration * 1000 / 5);
   };
 
   const addListen = async currentTime => {
-    if (state.hasListened) {
+    if (hasListened) {
       return;
     }
 
@@ -52,11 +50,8 @@ const AudioPlayer = props => {
     const newQuantity = (await axios.post('/graphql', graphQlQuery)).data.data.addListen.listensQuantity;
     // console.log(newQuantity)
 
-    setState({
-      ...state,
-      currentTrack: {...state.currentTrack, listensQuantity: newQuantity},
-      hasListened: true
-    });
+    setCurrentTrack({ ...currentTrack, listensQuantity: newQuantity });
+    setHasListened(true);
 
     if (!props.userId)
       props.onAddListen();
@@ -83,13 +78,7 @@ const AudioPlayer = props => {
     const response = await axios.post('/graphql', graphQlQuery);
     // console.log(response)
 
-    setState({
-      ...state,
-      currentTrack: {
-        ...state.currentTrack,
-        likesQuantity: response.data.data.addLike
-      }
-    });
+    setCurrentTrack({ currentTrack, likesQuantity: response.data.data.addLike });
   }
 
   const addToPlaylist = async (data) => {
@@ -105,61 +94,48 @@ const AudioPlayer = props => {
       payload.push(data[key].value);
     }
 
-    props.onAddTrack(payload, state.currentTrack._id);
+    props.onAddTrack(payload, currentTrack._id);
     closePlaylistModal();
   }
 
   useEffect(() => {
     if (props.currentTrack) {
-      setState({
-        ...state,
-        currentTrack: props.currentTrack,
-        isLiked: props.currentTrack.usersWhoLiked.includes(props.userId),
-        hasListened: false
-      });
+      setCurrentTrack(props.currentTrack);
+      setIsLiked(props.currentTrack.usersWhoLiked.includes(props.userId));
+      setHasListened(false);
     }
   }, [props.currentTrack]);
 
   const closeErrorModal = () => {
-    setState({...state,
-      errorModal: {
+    setErrorModal({
         title: '',
         content: '',
         redirectTo: '',
         show: false,
-      }})
+    });
   }
 
   const showErrorModal = (title, content, redirectTo) => {
-    setState({
-      ...state,
-      errorModal: {
-        title: title,
-        content: content,
-        redirectTo: redirectTo,
-        show: true,
-      }
+    setErrorModal({
+      title: title,
+      content: content,
+      redirectTo: redirectTo,
+      show: true,
     });
   }
 
   const closePlaylistModal = () => {
-    setState({
-      ...state,
-      playlistsModal: {
-        title: '',
-        show: false
-      }
+    setPlaylistsModal({
+      title: '',
+      show: false
     });
   }
 
   const showPlaylistModal = () => {
-    setState({
-      ...state,
-      playlistsModal: {
-        title: 'Choose the playlist',
-        show: true
-      }
-    })
+    setPlaylistsModal({
+      title: 'Choose the playlist',
+      show: true
+    });
   }
 
   const trackEnded = () => {
@@ -180,39 +156,39 @@ const AudioPlayer = props => {
 
   return (
     <div className="w-50">
-      <h1>{state.currentTrack.title}</h1>
+      <h1>{currentTrack.title}</h1>
       <ReactAudioPlayer
         className="mt-5"
         controls
-        src={'http://localhost:5000/resources/audio/' + state.currentTrack.audioUrl}
+        src={'http://localhost:5000/resources/audio/' + currentTrack.audioUrl}
         onEnded={trackEnded}
         onLoadedMetadata={onLoadedAudio}
-        listenInterval={state.listenedOffset}
+        listenInterval={listenedOffset}
         onListen={addListen}
         autoPlay
         onPlay={blockListening}
       />
       <PlayerMenu
-        currentTrackListens={state.currentTrack.listensQuantity}
-        currentTrackLikes={state.currentTrack.usersWhoLiked ? state.currentTrack.usersWhoLiked.length : 0}
+        currentTrackListens={currentTrack.listensQuantity}
+        currentTrackLikes={currentTrack.usersWhoLiked ? currentTrack.usersWhoLiked.length : 0}
         addLike={addLike}
         addToPlaylist={showPlaylistModal}
         removeTrack={props.removeTrack}
-        isLiked={state.isLiked}
+        isLiked={isLiked}
       />
       <StandardModal
-        showModal={state.errorModal.show}
-        title={state.errorModal.title}
-        content={state.errorModal.content}
+        showModal={errorModal.show}
+        title={errorModal.title}
+        content={errorModal.content}
         closeModal={closeErrorModal}
       />
       <FormModal
-        title={state.playlistsModal.title}
+        title={playlistsModal.title}
         controls={forms.choosePlaylistListForm(props.playlists)}
-        showModal={state.playlistsModal.show}
+        showModal={playlistsModal.show}
         submitHandler={addToPlaylist}
         closeModal={closePlaylistModal}
-        formIsValid={state.formIsValid}
+        formIsValid={formIsValid}
         changeValidity={() => {}}
       />
     </div>

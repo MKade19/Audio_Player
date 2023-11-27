@@ -9,33 +9,29 @@ import StandardModal from "../../UI/Modals/StandardModal/StandardModal";
 import FormUI from "../../UI/FormUI/FormUI";
 
 const AuthPage = props => {
-  const [ state, setState ] = useState({
-    controls: {},
-    formIsValid: false,
-    modal: {
-      title: '',
-      content: '',
-      redirectTo: '',
-      show: false
-    },
+  const [ controls, setControls ] = useState({});
+  const [ formIsValid, setFormIsValid ] = useState(false);
+  const [ modal, setModal] = useState({
+    title: '',
+    content: '',
+    redirectTo: '',
+    show: false
   });
+
 
   useEffect(() => {
     const controls = {...forms.signInForm};
-    setState({...state, controls: {...controls}});
+    setControls({...controls});
   }, []);
 
   useEffect(() => {
-    if (state.controls.email)
+    if (controls.email)
       if (props.isSignIn) {
-        let signInControls = {...util.refreshControls(state.controls)};
+        let signInControls = {...util.refreshControls(controls)};
         signInControls.userName = null;
-        setState({
-          ...state,
-          controls: {...signInControls},
-        });
+        setControls({...signInControls});
       } else {
-        let signUpControls = {...util.refreshControls(state.controls)};
+        let signUpControls = {...util.refreshControls(controls)};
         signUpControls.userName = {
           elementType: 'input',
           elementConfig: {
@@ -52,52 +48,64 @@ const AuthPage = props => {
           touched: false,
           valid: false
         }
-        setState({
-          ...state,
-          controls: {...signUpControls},
-        });
+        setControls({...signUpControls});
       }
   }, [props.isSignIn]);
 
   useEffect(() => {
     if (props.error) {
-      setState({...state, modal: {
-        title: 'Error', content: props.error.message, show: true, redirectTo: ''
-      }});
+      setModal({
+        title: 'Error', 
+        content: props.error.message, 
+        show: true, 
+        redirectTo: ''
+      });
       return;
     }
 
     if (props.isSignIn && props.success) {
-      setState({...state, modal: {
-        title: 'Success!', content: 'You have authenticated successfully', show: true, redirectTo: '/home'
-      }});
+      setModal({
+        title: 'Success!', 
+        content: 'You have authenticated successfully!', 
+        show: true, 
+        redirectTo: '/home'
+      });
     }
 
     if (!props.isSignIn && props.success) {
-      setState({...state, modal: {
-        title: 'Success!', content: 'You have registered successfully!', show: true, redirectTo: '/signIn'
-      }});
+      setModal({
+        title: 'Success!', 
+        content: 'You have registered successfully!', 
+        show: true, 
+        redirectTo: '/home'
+      });
     }
   }, [props.error, props.success]);
 
   const inputChangeHandler = (controls, formIsValid) => {
-    setState({...state, controls: controls, formIsValid: formIsValid});
+    setControls(controls);
+    setFormIsValid(formIsValid);
   }
 
   const submitHandler = async () => {
     if (props.isSignIn) {
-      props.onAuth(state.controls.email.value, state.controls.password.value);
+      props.onAuth(controls.email.value, controls.password.value);
     } else {
       props.onRegister(
-        state.controls.email.value,
-        state.controls.password.value,
-        state.controls.userName.value
+        controls.email.value,
+        controls.password.value,
+        controls.userName.value
       );
     }
   }
 
   const closeModal = () => {
-    setState({...state, modal: {title: '', content: '', show: false, redirectTo: ''}});
+    setModal({
+      title: '', 
+      content: '', 
+      show: false, 
+      redirectTo: ''
+    });
     props.onRefresh();
   }
 
@@ -106,19 +114,19 @@ const AuthPage = props => {
       <h1>{props.isSignIn ? 'Sign in' : 'Sign up'}</h1>
       <FormUI
         inputChangeHandler={inputChangeHandler}
-        controls={state.controls}
-        formIsValid={state.formIsValid}
+        controls={controls}
+        formIsValid={formIsValid}
         submitHandler={submitHandler}
       />
       <Link className="d-block mt-2" to={props.isSignIn ? '/signUp' : '/signIn'}>
         {props.isSignIn ? 'Sign up' : 'Back to sign in'}
       </Link>
       <StandardModal
-        showModal={state.modal.show}
-        title={state.modal.title}
-        content={state.modal.content}
+        showModal={modal.show}
+        title={modal.title}
+        content={modal.content}
         closeModal={closeModal}
-        redirectTo={state.modal.redirectTo}
+        redirectTo={modal.redirectTo}
       />
     </main>
   );

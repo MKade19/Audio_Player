@@ -12,12 +12,17 @@ import {
   REGISTER
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { getPersistConfig } from "redux-deep-persist";
 
-const persistConfig = {
+const persistConfig = getPersistConfig({
   key: 'root',
-  blacklist: ['playlists'],
+  blacklist: [
+    'playlists',
+    'auth.error'
+  ],
   storage,
-}
+  rootReducer
+});
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({

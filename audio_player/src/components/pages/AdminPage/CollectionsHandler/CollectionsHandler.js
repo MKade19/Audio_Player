@@ -2,16 +2,14 @@ import {useEffect, useState} from "react";
 import {Button} from "react-bootstrap";
 
 const CollectionsHandler = props => {
-  const [state, setState] = useState({
-    collections: [],
-  });
+  const [collections, setCollections] = useState([]);
 
   useEffect(() => {
     if (props.collections)
-      setState({...state, collections: props.collections});
+    setCollections(props.collections);
   }, [props.collections]);
 
-  const options = state.collections.map(el => {
+  const options = collections.map(el => {
     return (
       <option key={el} value={el}>{el}</option>
     )

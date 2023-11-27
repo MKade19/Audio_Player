@@ -52,7 +52,8 @@ module.exports = {
         throw ApiError.Forbidden();
       }
 
-      const potentialTrack = await TrackService.singleTrackByTitle(trackInput.title);
+      const trackService = new TrackService();
+      const potentialTrack = await trackService.singleTrackByTitle(trackInput.title);
       if (potentialTrack) {
         throw ApiError.UnprocessableEntity('Track with this title already exists!');
       }
@@ -62,7 +63,7 @@ module.exports = {
         throw ApiError.UnprocessableEntity('There is no such a user');
       }
 
-      return TrackService.createTrack({
+      return new TrackService().createTrack({
         fields: trackInput,
         userName: user.userName
       });
