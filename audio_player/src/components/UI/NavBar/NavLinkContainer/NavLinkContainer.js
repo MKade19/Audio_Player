@@ -110,6 +110,16 @@ const NavLinkContainer = props => {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    setNavigationItems({
+      ...navigationItems,
+      userName: {
+        ...navigationItems.userName,
+        title: props.userName
+      }
+    });
+  }, [props.userName]);
+
   const navItemsArray = [];
   for (let key in navigationItems) {
     if (navigationItems[key].authRequired && !props.userId) {

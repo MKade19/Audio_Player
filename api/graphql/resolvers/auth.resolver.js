@@ -87,5 +87,43 @@ module.exports = {
 
       return {...tokens, credentials: {userId: payload.userId, role: payload.role}};
     },
+
+    register: async (root, {userInput}, {req}) => {
+      const userService = new UserService();
+      const potentialUser = await userService.singleUserByEmail(userInput.email);
+
+      if (potentialUser) {
+        throw ApiError.UnprocessableEntity('User with this email already exists!');
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(userInput.password, salt);
+
+      let role = 'USER'
+      if (userInput.role) {
+        role = userInput.role
+      }
+
+      const user = await userService.createUser({
+        email: userInput.email,
+        password: hashedPassword,
+        userName: userInput.userName,
+        role
+      });
+
+      const payload = {
+        userId: user._id,
+        role: user.role
+      };
+
+      const tokens = tokenService.generateTokens(payload);
+      await tokenService.saveToken(user._id, tokens.refreshToken);
+
+      return {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        credentials: { userId: user._id, role: user.role, userName: user.userName }
+      };
+    }
   }
 }

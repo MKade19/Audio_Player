@@ -20,36 +20,11 @@ const AuthPage = props => {
 
 
   useEffect(() => {
-    const controls = {...forms.signInForm};
-    setControls({...controls});
+    setControls({...getControls(props.isSignIn)});
   }, []);
 
   useEffect(() => {
-    if (controls.email)
-      if (props.isSignIn) {
-        let signInControls = {...util.refreshControls(controls)};
-        signInControls.userName = null;
-        setControls({...signInControls});
-      } else {
-        let signUpControls = {...util.refreshControls(controls)};
-        signUpControls.userName = {
-          elementType: 'input',
-          elementConfig: {
-            label: "Username",
-            type: "text",
-            id: "nameInput",
-            placeholder: "Enter name",
-          },
-          value: '',
-          validation: {
-            required: true,
-            minLength: 6
-          },
-          touched: false,
-          valid: false
-        }
-        setControls({...signUpControls});
-      }
+    setControls({...getControls(props.isSignIn)})
   }, [props.isSignIn]);
 
   useEffect(() => {
@@ -81,6 +56,18 @@ const AuthPage = props => {
       });
     }
   }, [props.error, props.success]);
+
+  const getControls = isSignIn => {
+    let controls;
+    
+    if (isSignIn) {
+      controls = {...forms.signInForm};
+    } else {
+      controls = {...forms.signUpForm};
+    }
+
+    return controls;
+  }
 
   const inputChangeHandler = (controls, formIsValid) => {
     setControls(controls);

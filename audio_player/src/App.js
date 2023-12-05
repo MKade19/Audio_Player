@@ -66,12 +66,18 @@ function App(props) {
       <Routes>
         <Route path="/home" element={ <HomePage/> }/>
         <Route path="/player" element={ <PlayerPage/> }/>
-        <Route path="/signIn" element={ <AuthPage isSignIn={true}/> }/>
-        <Route path="/signUp" element={ <AuthPage isSignIn={false}/> }/>
-          <Route path="/admin" element={
-            props.auth.role === 'ADMIN' ? <AdminPage/>
-              : <Navigate to={'/errorForbidden'}/>
-          }>
+        <Route path="/signIn" element={
+          !props.auth.userId ? <AuthPage isSignIn={true}/>
+            : <Navigate to={'/home'}/>
+        }/>
+        <Route path="/signUp" element={
+          !props.auth.userId ? <AuthPage isSignIn={false}/>
+            : <Navigate to={'/home'}/>
+        }/>
+        <Route path="/admin" element={
+          props.auth.role === 'ADMIN' ? <AdminPage/>
+            : <Navigate to={'/errorForbidden'}/>
+        }>
           <Route path="main" element={<AdminMain/>}/>
           <Route path="edit" element={<EditAddPage mode="EDIT"/>}/>
           <Route path="create" element={<EditAddPage mode="CREATE"/>}/>

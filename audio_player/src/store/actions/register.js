@@ -1,5 +1,6 @@
 import * as actionTypes from './actionTypes'
-import axios from "../../axios/axios";
+import defaultAxios from 'axios';
+import {authSuccess} from './auth';
 
 export const registerStart = () => {
   return {
@@ -26,11 +27,15 @@ export const register = (email, password, userName) => {
     try {
       const graphqlQuery = {
         query: `
-          mutation CreateUser($userData: UserInputData!) {
-            createUser(userInput: $userData) {
-              _id
-              email
-              userName
+          mutation Register($userData: UserInputData!) {
+            register(userInput: $userData) {
+              accessToken
+              refreshToken
+              credentials {
+                role
+                userId
+                userName
+              }
             }
           }
         `,
@@ -43,8 +48,10 @@ export const register = (email, password, userName) => {
         }
       };
 
-      const result = await axios.post('/graphql', graphqlQuery);
+      const response = await defaultAxios.post('http://localhost:5000/graphql', graphqlQuery);
+      // console.log(response);
       dispatch(registerSuccess());
+      dispatch(authSuccess(response.data.data.register));
     } catch (e) {
       dispatch(registerFail(e.response.data.errors[0]));
     }

@@ -38,6 +38,60 @@ export default {
   },
 
   /*
+  * SIGN UP FORM
+  * */
+  signUpForm: {
+    email: {
+      elementType: 'input',
+      elementConfig: {
+        label: "Email address",
+        type: "email",
+        id: "emailInput",
+        placeholder: "Enter email",
+      },
+      value: '',
+      validation: {
+        required: true
+      },
+      touched: false,
+      valid: false
+    },
+    password: {
+      elementType: 'input',
+      elementConfig: {
+        label: "Password",
+        type: "password",
+        id: "passwordInput",
+        placeholder: "Enter password",
+      },
+      value: '',
+      validation: {
+        required: true,
+        minLength: 6,
+        maxLength: 20
+      },
+      touched: false,
+      valid: false
+    },
+    userName: {
+      elementType: 'input',
+      elementConfig: {
+        label: "Username",
+        type: "text",
+        id: "nameInput",
+        placeholder: "Enter name",
+      },
+      value: '',
+      validation: {
+        required: true,
+        minLength: 6
+      },
+      touched: false,
+      valid: false
+    }
+  },
+
+  /*
   * USER FORM
   * */
 

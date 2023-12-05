@@ -135,6 +135,7 @@ type RootMutation {
     login(email: String!, password: String!): AuthData!
     logout(refreshToken: String!): String!
     refresh(refreshToken: String!): AuthData!
+    register(userInput: UserInputData!): AuthData!
     createRawPlaylist(playlistName: String!, userId: ID!): Playlist
     createPlaylist(playlistInput: PlaylistInputData!): Playlist
     updatePlaylist(playlistId: ID!, playlistInput: PlaylistInputData!): Playlist
