@@ -11,7 +11,7 @@ instance.interceptors.request.use(request => {
   request.headers.setAuthorization(`Bearer ${store.getState().auth.accessToken}`);
   return request;
 }, error => {
-  // console.log(error);
+  console.log(error);
   return Promise.reject(error);
 });
 
@@ -20,6 +20,7 @@ instance.interceptors.response.use(response => {
   return response;
 }, async error => {
   const originalRequest = error.config;
+  // console.log(error);
   if (error.response.status === 401) {
     try {
       const graphQlQuery = {

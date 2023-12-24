@@ -119,8 +119,6 @@ const EditAddPage = props => {
         await CommentService.createFullComment(controls);
         break;
     }
-
-    alert('Record was successfully added!');
   }
 
   const updateRecord = async () => {
@@ -162,8 +160,6 @@ const EditAddPage = props => {
         await CommentService.updateComment(recordId, controls);
         break;
     }
-
-    alert('Record was successfully updated!');
   }
 
   const navigateToMain = () => {

@@ -22,7 +22,14 @@ class TrackService {
       }`
     }
 
-    const response = await axios.post('', graphQlQuery);
+    let response = {};
+
+    try {
+      response = await axios.post('', graphQlQuery);
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
     // console.log(response);
     return response.data.data.track;
   }
@@ -40,7 +47,14 @@ class TrackService {
       }`
     }
 
-    const response = await axios.post('', graphQlQuery);
+    let response = {};
+
+    try {
+      response = await axios.post('', graphQlQuery);
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
     // console.log(response);
     return response.data.data.track;
   }
@@ -86,7 +100,15 @@ class TrackService {
       }
     }
 
-    const response = await axios.post('', graphQlQuery);
+    let response = {};
+
+    try {
+      response = await axios.post('', graphQlQuery);
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
+
     // console.log(response);
     return { ...response.data.data.tracksDataChunk };
   }
@@ -98,8 +120,16 @@ class TrackService {
       }`
     }
 
-    const response = await axios.post('', graphQlQuery);
+    let response = {};
+
+    try {
+      response = await axios.post('', graphQlQuery);
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
     // console.log(response);
+
     return [...response.data.data.categories];
   }
 
@@ -124,7 +154,16 @@ class TrackService {
       variables: {payload: payload}
     }
 
-    return axios.post('', graphQlQuery);
+    let response = {};
+
+    try {
+      response = await axios.post('', graphQlQuery);;
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
+
+    return response;
   }
 
   updateTrack = async ({audioData, fieldValues, userId, trackId, oldUrl}) => {
@@ -152,7 +191,16 @@ class TrackService {
       }
     }
 
-    return axios.post('', graphQlQuery);
+    let response = {};
+
+    try {
+      response = await axios.post('', graphQlQuery);;
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
+
+    return response;
   }
 }
 

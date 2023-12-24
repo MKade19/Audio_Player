@@ -2,6 +2,8 @@ const TrackService = require('../../services/track.service');
 const User = require("../../models/user");
 const ApiError = require("../../errors/api.error");
 const {deleteFile, checkAuth} = require('../../util/util');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 module.exports = {
   query: {
@@ -129,13 +131,18 @@ module.exports = {
       const trackService = new TrackService();
 
       const track = await trackService.singleTrackById(id);
+      
       if (!track) {
         throw ApiError.NotFound('There is no such a track!');
       }
 
-      if (track.usersWhoLiked.includes(payload.userId)) {
-        throw ApiError.BadRequest('You have already liked this track!');
-      }
+      const userId = new mongoose.Types.ObjectId(payload.userId);
+
+      track.usersWhoLiked.forEach(el => {
+        if (userId.equals(el)) {
+          throw ApiError.BadRequest('You have already liked this track!');
+        }
+      });
 
       await trackService.addLike(id, payload.userId);
 

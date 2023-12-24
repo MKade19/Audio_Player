@@ -8,6 +8,7 @@ import StandardModal from "../../../UI/Modals/StandardModal/StandardModal";
 import forms from "../../../../util/forms";
 import FormModal from "../../../UI/Modals/FormModal/FormModal";
 import * as actions from "../../../../store/actions";
+import TrackService from '../../../../services/track.service'
 
 const AudioPlayer = props => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,7 +29,7 @@ const AudioPlayer = props => {
   const [hasListened, setHasListened] = useState(false);
 
   const onLoadedAudio = event => {
-    setListenedOffset(event.target.duration * 1000 / 5);
+    setListenedOffset(event.target.duration * 1000 / 10);
   };
 
   const addListen = async currentTime => {
@@ -75,10 +76,19 @@ const AudioPlayer = props => {
       }
     }
 
-    const response = await axios.post('/graphql', graphQlQuery);
-    // console.log(response)
+    let response = {};
 
-    setCurrentTrack({ currentTrack, likesQuantity: response.data.data.addLike });
+    try {
+      response = await axios.post('/graphql', graphQlQuery);
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
+
+    if (response) {
+      setCurrentTrack(await TrackService.fetchOneTrack(currentTrack._id));
+      setIsLiked(true);
+    }
   }
 
   const addToPlaylist = async (data) => {
@@ -99,11 +109,18 @@ const AudioPlayer = props => {
   }
 
   useEffect(() => {
-    if (props.currentTrack) {
-      setCurrentTrack(props.currentTrack);
-      setIsLiked(props.currentTrack.usersWhoLiked.includes(props.userId));
-      setHasListened(false);
+    const setTrack = async () => {
+      if (props.currentTrack) {
+        const newTrack = await TrackService.fetchOneTrack(props.currentTrack._id);
+        console.log(newTrack);
+  
+        setCurrentTrack(newTrack);
+        setIsLiked(newTrack.usersWhoLiked.includes(props.userId));
+        setHasListened(false);
+      }
     }
+
+    setTrack();
   }, [props.currentTrack]);
 
   const closeErrorModal = () => {

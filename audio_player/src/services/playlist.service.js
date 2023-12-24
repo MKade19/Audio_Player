@@ -25,8 +25,16 @@ class PlaylistService {
       }
     }
 
-    const response = await axios.post('', graphQlQuery);
-    console.log(response);
+    let response = {};
+
+    try {
+      response = await axios.post('', graphQlQuery);
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
+
+    //console.log(response);
     store.dispatch(createPlaylist(response.data.data.createRawPlaylist));
 
     return response.data.data.createRawPlaylist;
@@ -50,7 +58,14 @@ class PlaylistService {
       variables: { playlistInput }
     }
 
-    const response = await axios.post('', graphQlQuery);
+    let response = {};
+
+    try {
+      response = await axios.post('', graphQlQuery);
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
     // console.log(response);
     return response.data.data.createPlaylist;
   }
@@ -76,13 +91,20 @@ class PlaylistService {
       }
     }
 
-    const response = await axios.post('', graphQlQuery);
+    let response = {};
+
+    try {
+      response = await axios.post('', graphQlQuery);
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
     // console.log(response);
     return response.data.data.updatePlaylist;
   }
 
   fetchPlaylistForForm = async (playlistId) => {
-    console.log(playlistId)
+    // console.log(playlistId)
     const graphQlQuery = {
       query: `{
         playlistForForm(id: "${playlistId}") {
@@ -97,7 +119,14 @@ class PlaylistService {
       }`
     };
 
-    const response = await axios.post('', graphQlQuery);
+    let response = {};
+
+    try {
+      response = await axios.post('', graphQlQuery);
+    } catch (error) {
+      alert(error.response.data.errors.map(e => e.message).join('\n'));
+      return;
+    }
     // console.log(response);
     let playlist = response.data.data.playlistForForm;
     playlist.trackList = playlist.tracks.map(el => el.title).join(', ');
